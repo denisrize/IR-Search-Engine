@@ -16,7 +16,7 @@ from contextlib import closing
 
 # Let's start with a small block size of 30 bytes just to test things out. 
 BLOCK_SIZE = 1999998
-bucket_name = "316476431rz"
+bucket_name = ""##########""
 client = storage.Client()
 my_bucket = client.bucket(bucket_name=bucket_name)
 
