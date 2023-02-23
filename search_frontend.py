@@ -15,7 +15,7 @@ import bz2
 class MyFlaskApp(Flask):
 
     def run(self, host=None, port=None, debug=None, **options):
-        bucket_name = "316476431rz"
+        bucket_name = "##########"
         self.tokenizer = Tokenizer()
         client = storage.Client()
         self.my_bucket = client.bucket(bucket_name=bucket_name)
@@ -68,10 +68,6 @@ class MyFlaskApp(Flask):
                 with blob.open('rb') as openfile:
                     self.page_views = pickle.load(openfile)
 
-             # elif blob.name == "wiki2vec.bin":
-             #    with bz2.BZ2File('wiki2vec.bin', 'r') as f:
-             #         self.word2vec = Wikipedia2Vec.load(f)
-
             # to use the word2vec model:
             # word2vec.most_similar(model.get_entity('Ritalin'), 1)
 
@@ -115,20 +111,19 @@ def search():
     query_stemmed = list(set(app.tokenizer.tokenize(query, True)))
     query = query.lower()
     if any(substring in query for substring in question) or query.endswith("?"):
-        #body_res = app.cosine_stem_body.calcCosineSim(query_stemmed, app.body_stem_index, 30)
         body_res = app.cosine_stem_body.calcCosineSim(query_stemmed, app.body_stem_index, 30)
-        resBinarytitle = getDocListResultWithPageRank(app.title_stem_index, query_stemmed, "_title_stem", 30, app.page_rank)
+        title_res = getDocListResultWithPageRank(app.title_stem_index, query_stemmed, "_title_stem", 30, app.page_rank)
         title_weight = 0.3
         body_weight = 0.7
 
     else:
         #body_res = app.cosine_stem_body.calcCosineSim(query_stemmed, app.body_stem_index, 30)
-        resBinarytitle = app.BM25_title.search(query_stemmed, 30)
+        title_res = app.BM25_title.search(query_stemmed, 30)
         body_res = app.BM25_body.search(query_stemmed, 30)
         title_weight = 0.7
         body_weight = 0.3
 
-    merged_res = merge_results(resBinarytitle, body_res, title_weight=title_weight, text_weight=body_weight,page_rank=app.page_rank , N=10)
+    merged_res = merge_results(title_res, body_res, title_weight=title_weight, text_weight=body_weight,page_rank=app.page_rank , N=10)
 
     res = [(int(doc_id), app.doc_title_dict.get(doc_id, "not found")) for doc_id, score in merged_res]
 
@@ -269,81 +264,6 @@ def get_pageview():
     res = [app.page_views[wiki_id] for wiki_id in wiki_ids]
     # END SOLUTION
     return jsonify(res)
-"""
-@app.route("/search_test")
-def searchTest():
-    ''' Returns up to a 100 of your best search results for the query. This is
-        the place to put forward your best search engine, and you are free to
-        implement the retrieval whoever you'd like within the bound of the
-        project requirements (efficiency, quality, etc.). That means it is up to
-        you to decide on whether to use stemming, remove stopwords, use
-        PageRank.py, query expansion, etc.
-
-        To issue a query navigate to a URL like:
-         http://YOUR_SERVER_DOMAIN/search?query=hello+world
-        where YOUR_SERVER_DOMAIN is something like XXXX-XX-XX-XX-XX.ngrok.io
-        if you're using ngrok on Colab or your external IP on GCP.
-    Returns:
-    --------
-        list of up to 100 search results, ordered from best to worst where each
-        element is a tuple (wiki_id, title).
-    '''
-    res = []
-    query = request.args.get('query', '')
-    if len(query) == 0:
-      return jsonify(res)
-    # BEGIN SOLUTION
-    bm25W = 0.5
-    cosineW = 0.5
-    binaryW = 0.333
-    query_tokens = list(set(app.tokenizer.tokenize(query, True)))
-    future_body_bm25 = app.executor.submit(app.BM25_body.search,  query_tokens, 100, bm25W)
-    future_title_bm25 = app.executor.submit(app.BM25_title.search,  query_tokens, 100, bm25W)
-    resBM25 = merge_results(future_body_bm25.result(), future_title_bm25.result(), title_weight=0.4, text_weight=0.6, N=100)
-
-    resCosine = get_topN_score_for_queries(app.tokenizer.tokenize(query, False), app.index_body,
-                                           app.DL_body, app.doc_norm, N=100, cosineWeight=cosineW)
-
-    mergedDict = combineListTuplesIntoDict(bm25List=resBM25, cosineList=resCosine)
-
-    resTop = get_top_n(sim_dict=mergedDict, N=100)
-
-    res = [(str(doc_id), app.doc_title_dict[doc_id]) for doc_id, score in resTop]
-    # END SOLUTION
-    return jsonify(res)
-
-@app.route("/search_test_cos")
-def search_test_cos():
-    ''' Returns up to a 100 of your best search results for the query. This is
-        the place to put forward your best search engine, and you are free to
-        implement the retrieval whoever you'd like within the bound of the
-        project requirements (efficiency, quality, etc.). That means it is up to
-        you to decide on whether to use stemming, remove stopwords, use
-        PageRank.py, query expansion, etc.
-
-        To issue a query navigate to a URL like:
-         http://YOUR_SERVER_DOMAIN/search?query=hello+world
-        where YOUR_SERVER_DOMAIN is something like XXXX-XX-XX-XX-XX.ngrok.io
-        if you're using ngrok on Colab or your external IP on GCP.
-    Returns:
-    --------
-        list of up to 100 search results, ordered from best to worst where each
-        element is a tuple (wiki_id, title).
-    '''
-    res = []
-    query = request.args.get('query', '')
-    if len(query) == 0:
-      return jsonify(res)
-    # BEGIN SOLUTION
-
-    cosScores = app.cosine_body.calcCosineSim(app.tokenizer.tokenize(query, True),
-                                        app.index_body, N=100, cosineWeight=1)
-    res = get_top_n(sim_dict=cosScores, N=100)
-    res = [(str(doc_id), app.doc_title_dict[doc_id]) for doc_id, score in res]
-    # END SOLUTION
-    return jsonify(res)
-
-"""
 
 if __name__ == '__main__':
     # run the Flask RESTful API, make the server publicly available (host='0.0.0.0') on port 8080
