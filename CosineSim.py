@@ -17,7 +17,7 @@ class CosineSim:
         self.N = len(DL)
         self.AVGDL = sum(DL.values()) / self.N
         self.index_type = index_type
-        self.bucket_name = "316476431rz"
+        self.bucket_name = ""##########""
 
     def read_posting_list(self, index, w):
         TUPLE_SIZE = 6
