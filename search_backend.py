@@ -6,7 +6,7 @@ import pandas as pd
 from contextlib import closing
 from inverted_index_gcp import MultiFileReader
 
-bucket_name = "316476431rz"
+bucket_name = ""##########""
 
 def read_posting_list(inverted, w, index_type):
     TUPLE_SIZE = 6
