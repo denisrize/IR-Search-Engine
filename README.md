@@ -1,11 +1,11 @@
 # IR-Search-Engine
 ### Description:
-Wikipedia Search Engine over more than 6 million pages that been implemented using Flask-based RESTful API. The engine efficiently searches and retrieves relevant information from a preprocessed and indexed collection of over 6 million articles. These articles are categorized into buckets using multiple methods, ensuring swift and accurate search results. The search engine supports multiple endpoints to search articles based on different criteria, providing titles, IDs, and other relevant data. It boasts an average response time of 2.6 seconds and achieves a 67% success rate in searches (recall).
+Wikipedia Search Engine over more than 6 million pages that been implemented using Flask-based RESTful API. The engine efficiently searches and retrieves relevant information from a preprocessed and indexed collection of over 6 million articles. These articles are categorized into buckets using multiple methods, ensuring swift and accurate search results. The search engine supports multiple endpoints to search articles based on different criteria, providing titles, IDs, and other relevant data. It boasts an average response time of 1.8 seconds and achieves a 67% success rate in searches (recall).
 
 ![googleImage](https://user-images.githubusercontent.com/55393990/220896173-a43911a9-0498-4b7a-ab71-1157c5e89e6d.png)
 
 ### Features:
-- Fast and Efficient: Returns results in an average of 2.6 seconds.
+- Fast and Efficient: Returns results in an average of 1.8 seconds.
 - High Recall: Achieves a 67% successful search rate.
 - Multiple Search Methods: Supports binary search, BM25, and cosine similarity.
 - Versatile Endpoints: Includes endpoints for body search, title search, anchor text search, PageRank, and page views.
